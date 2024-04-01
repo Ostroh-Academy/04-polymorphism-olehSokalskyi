@@ -33,101 +33,203 @@
 Приклад програми:
 
 
-> using System; using System.Collections.Generic; using System.Linq;
-> using System.Text;
-> 
-> namespace ConsoleApplication1 {
->     class Celipsoid
->     {
->         public int a1, a2, a3, b1, b2, b3;
->         public double v;
->         virtual public void inita()
->         {
->             System.Console.WriteLine("Введiть пiвосi елiпсоїда a1, a2, a3:");
->             a1 = Convert.ToInt32(Console.ReadLine());
->             a2 = Convert.ToInt32(Console.ReadLine());
->             a3 = Convert.ToInt32(Console.ReadLine());
->         }
->         virtual public void initb()
->         {
->             System.Console.WriteLine("Введiть координати змiщення центру b1, b2, b3:");
->             b1 = Convert.ToInt32(Console.ReadLine());
->             b2 = Convert.ToInt32(Console.ReadLine());
->             b3 = Convert.ToInt32(Console.ReadLine());
->         }
->         virtual public void show()
->         {
->             Console.WriteLine("a1= " + a1);
->             Console.WriteLine("a2= " + a2);
->             Console.WriteLine("a3= " + a3);
->             Console.WriteLine("b1= " + b1);
->             Console.WriteLine("b2= " + b2);
->             Console.WriteLine("b3= " + b3);
->         }
->         virtual public double size()
->         {
->             v = 4.0 * a1 * a2 * a3 / 3.0;
->             Console.Write("v елiпсоїда = ");
->             Console.WriteLine(v);
->             return (v);
->         }
-> 
->     }
->     class Cball : Celipsoid
->     {
->         public int r;
->         public override void inita()
->         {
->             System.Console.Write("Введiть радiус кулi:");
->             r = Convert.ToInt32(Console.ReadLine());
->             base.initb();
->         }
->         public override void show()
->         {
->             Console.WriteLine("r= " + r);
->             Console.WriteLine("b1= " + b1);
->             Console.WriteLine("b2= " + b2);
->             Console.WriteLine("b3= " + b3);
->         }
->         public override double size()
->         {
->             v = 4.0 * r * r * r / 3.0;
->             Console.Write("v кулi = ");
->             Console.WriteLine(v);
->             return (v);
->         }
->     }
-> 
->     class Program
->     {
->         static void Main(string[] args)
->         {
->             int userSelect;
->             Celipsoid baseobj = new Celipsoid();
->             do
->             {
->                 Console.WriteLine("Enter '0' if you want to work with elipsoid and '1' - with ball");
->                 userSelect = Convert.ToInt32(Console.ReadLine());
->                 if (userSelect == 0)
->                 {
->                     baseobj = new Celipsoid();
->                     baseobj.initb();
->                 }
->                 else if (userSelect == 1)
->                 {
->                     baseobj = new Cball();
->                 }
->                 else
->                 {
->                     return;
->                 }
->                 baseobj.inita();
->                 baseobj.show();
->                 baseobj.size();
->             } while (true);
->         }
->     } }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace LR05
+{
+    struct Coords
+    {
+        public double x;
+        public double y;
+        public double z;
+        private static readonly Random random = new Random();
+
+        public double GetDistance(Coords coord)
+        {
+            return Math.Sqrt(Math.Pow(coord.x - x, 2) + Math.Pow(coord.y - y, 2) + Math.Pow(coord.z - z, 2));
+        }
+
+        public Coords(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        public void SetCoords()
+        {
+            string xStr, yStr, zStr;
+            bool isFirst = true;
+            do
+            {
+                if (!isFirst)
+                {
+                    Console.WriteLine("Incorrect coords, try again");
+                }
+
+                Console.Write("Enter x: ");
+                xStr = Console.ReadLine();
+                Console.WriteLine();
+
+                Console.Write("Enter y: ");
+                yStr = Console.ReadLine();
+                Console.WriteLine();
+
+                Console.Write("Enter z: ");
+                zStr = Console.ReadLine();
+                Console.WriteLine("\n");
+
+                isFirst = false;
+            } while (!double.TryParse(xStr, out x) &
+                     !double.TryParse(yStr, out y) &
+                     !double.TryParse(zStr, out z));
+        }
+        public void GenerateCoord(double min, double max)
+        {
+            x = random.NextDouble() * (max - min) + min;
+            y = random.NextDouble() * (max - min) + min;
+            z = random.NextDouble() * (max - min) + min;
+        }
+
+        public override string ToString()
+        {
+            return $"({x.ToString("0.00"),5};{y.ToString("0.00"),5};{z.ToString("0.00"),5})";
+        }
+    }
+    class Triangle
+    {
+        protected int counterOfVertices = 3;
+        protected Coords[] vertices;
+        public Triangle()
+        {
+            vertices = new Coords[counterOfVertices];
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].SetCoords();
+            }
+        }
+
+        public Triangle(double from, double to)
+        {
+            vertices = new Coords[counterOfVertices];
+            GeneratePoints(from, to);
+        }
+
+        public void GeneratePoints(double from, double to)
+        {
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i].GenerateCoord(from, to);
+        }
+        protected double GetAreaByCoords(Coords coord1, Coords coord2, Coords coord3)
+        {
+            if (vertices.Length == counterOfVertices)
+            {
+                double a = coord1.GetDistance(coord2);
+                double b = coord2.GetDistance(coord3);
+                double c = coord3.GetDistance(coord1);
+
+                double p = (a + b + c) / 2;
+
+                return Math.Sqrt(p * (p - a) * (p - b) * (p - c));
+            }
+
+            return 0;
+        }
+        public virtual double GetArea()
+        {
+            return GetAreaByCoords(vertices[0], vertices[1], vertices[2]);
+        }
+
+        public override string ToString()
+        {
+            return $"A: {vertices[0]}, B: {vertices[1]}, C: {vertices[2]}";
+        }
+    }
+
+    class Tetraeder : Triangle
+    {
+        private Coords S;
+
+        public Tetraeder() : base()
+        {
+            S.SetCoords();
+        }
+        public Tetraeder(double from, double to) : base(from, to)
+        {
+            S.GenerateCoord(from, to);
+        }
+        public override double GetArea()
+        {
+            double res = base.GetArea() +
+            GetAreaByCoords(vertices[0], vertices[1], S) +
+            GetAreaByCoords(vertices[1], vertices[2], S) +
+            GetAreaByCoords(vertices[2], vertices[0], S);
+
+            return res;
+        }
+        public double GetValue()
+        {
+            if (counterOfVertices == 3)
+            {
+                Coords[] vectors = new Coords[counterOfVertices];
+
+                for (int i = 0; i < counterOfVertices; i++)
+                {
+                    vectors[i].x = vertices[i].x - S.x;
+                    vectors[i].y = vertices[i].y - S.y;
+                    vectors[i].z = vertices[i].z - S.z;
+                }
+
+                return (vectors[0].x * vectors[1].y * vectors[2].z +
+                       vectors[0].y * vectors[1].z * vectors[2].x +
+                       vectors[0].z * vectors[1].y * vectors[2].x -
+                       vectors[0].z * vectors[1].y * vectors[2].x -
+                       vectors[0].y * vectors[1].x * vectors[2].z -
+                       vectors[0].x * vectors[1].z * vectors[2].y) / 6;
+            }
+
+            return 0;
+        }
+
+        public override string ToString()
+        {
+            return $"S: {S}, { base.ToString() }";
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int code;
+            do
+            {
+                Console.WriteLine("1. Triangle");
+                Console.WriteLine("2. Tetraeder");
+                Console.Write("Enter mode: ");                
+            } while (!int.TryParse(Console.ReadLine(), out code) || code < 1 || code > 2);
+
+            Triangle pObj = null;
+
+            if (code == 1)
+            {
+                Triangle triangle = new Triangle();
+                pObj = triangle;
+            } 
+            else
+            {
+                Tetraeder tetraeder = new Tetraeder();
+                pObj = tetraeder;
+            }
+
+            Console.WriteLine(pObj.GetArea());
+        }
+    }
+}
 
 
 Варіанти завдань 
