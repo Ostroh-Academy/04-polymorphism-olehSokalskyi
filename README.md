@@ -306,10 +306,12 @@ namespace LR05
 Цей рядок надає змову викликати базовий функціонал методу CheckVectorSatisfies щоб не переписувати його повністю тим самим скоротивши код
 ## Порівняння
 З вітуальним 
-![image](https://github.com/olehSokalskyi/04-polymorphism-olehSokalskyi/assets/162996249/040f81d7-cd04-452e-b866-fe9783cb438c)
+![image](https://github.com/olehSokalskyi/04-polymorphism-olehSokalskyi/assets/162996249/2147bcb5-a8bf-47d8-904b-87f64a607cca)
+
 
 Без
-![image](https://github.com/olehSokalskyi/04-polymorphism-olehSokalskyi/assets/162996249/b4341d81-3cf3-4767-8c88-c91793b427bd)
+![image](https://github.com/olehSokalskyi/04-polymorphism-olehSokalskyi/assets/162996249/cf7d9982-2862-454e-b1ea-67f6ac86f7b4)
+
 
 Якщо не використовувати base.CheckVectorSatisfies(x) то потрібно перевизначити повністю весь метод щоб отримати бажаний результат.
 Цей підхід є не бажаним бо тоді порушуються правила поліморфізму та наслідування
